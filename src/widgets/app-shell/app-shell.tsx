@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { AccountStatusPill } from "@/features/account/ui/account-status-pill";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/cn";
 import { type AppSection, useUiStore } from "@/shared/store/use-ui-store";
@@ -208,6 +209,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Sun className="h-4 w-4" aria-hidden="true" />
               )}
             </Button>
+            <AccountStatusPill />
             <Button aria-label="알림" size="icon" type="button" variant="secondary">
               <Bell className="h-4 w-4" aria-hidden="true" />
             </Button>
