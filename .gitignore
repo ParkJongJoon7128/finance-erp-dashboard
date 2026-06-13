@@ -1,0 +1,18 @@
+# Local OS files
+.DS_Store
+
+# Local Codex harness overrides
+.codex/
+AGENTS.local.md
+.codex/AGENTS.local.md
+.codex/settings.local.json
+
+# Sensitive finance samples
+*.bank-sample.*
+*.real-statement.*
+private-samples/
+node_modules
+.next/
+.env
+.env.local
+.env*.local
