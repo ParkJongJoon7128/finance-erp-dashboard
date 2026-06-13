@@ -1,0 +1,6 @@
+{
+  "simple-browser.focusLockIndicator.enabled": true,
+  "terminal.integrated.env.osx": {
+    "BROWSER": "none"
+  }
+}
