@@ -43,7 +43,7 @@ export function RecentTransactionsTable({
               {transaction.date}
             </TableCell>
             <TableCell>
-              <div className="flex items-center gap-2 font-medium">
+              <div className="flex min-w-44 items-center gap-2 font-medium">
                 {transaction.type === "income" ? (
                   <ArrowDownLeft
                     className="h-4 w-4 text-toss-green-600 dark:text-toss-green-300"
@@ -55,7 +55,7 @@ export function RecentTransactionsTable({
                     aria-hidden="true"
                   />
                 )}
-                {transaction.merchant}
+                <span className="truncate">{transaction.merchant}</span>
               </div>
             </TableCell>
             <TableCell>{transaction.category}</TableCell>

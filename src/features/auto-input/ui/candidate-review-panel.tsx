@@ -26,7 +26,7 @@ export function CandidateReviewPanel() {
   );
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+    <div className="grid gap-4 2xl:grid-cols-[0.95fr_1.05fr]">
       <div className="rounded-lg border border-dashed border-toss-grey-300 bg-surface-muted p-4 dark:border-toss-grey-600">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface text-foreground shadow-sm">
@@ -40,7 +40,7 @@ export function CandidateReviewPanel() {
             </p>
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2 text-tds-7 text-muted">
+        <div className="mt-4 grid gap-2 text-tds-7 text-muted sm:grid-cols-2">
           <div className="rounded-md border border-border bg-surface p-3">
             분석 상태
             <strong className="mt-1 block text-tds-6 text-foreground">
@@ -68,7 +68,7 @@ export function CandidateReviewPanel() {
             onClick={() => setSelectedId(candidate.id)}
             type="button"
           >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
               <div className="min-w-0">
                 <p className="truncate text-tds-6 font-medium">{candidate.merchant}</p>
                 <p className="mt-1 text-tds-7 text-muted">
@@ -76,7 +76,7 @@ export function CandidateReviewPanel() {
                   {candidate.confidence}%
                 </p>
               </div>
-              <Badge variant={statusMeta[candidate.status].variant}>
+              <Badge className="w-fit shrink-0" variant={statusMeta[candidate.status].variant}>
                 {statusMeta[candidate.status].label}
               </Badge>
             </div>
@@ -88,8 +88,8 @@ export function CandidateReviewPanel() {
       </div>
 
       {selectedCandidate && (
-        <div className="lg:col-span-2">
-          <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 sm:grid-cols-5">
+        <div className="2xl:col-span-2">
+          <div className="grid gap-3 rounded-lg border border-border bg-surface p-4 sm:grid-cols-2 xl:grid-cols-5">
             <label className="space-y-1 text-tds-7 font-medium text-muted">
               날짜
               <input
@@ -97,7 +97,7 @@ export function CandidateReviewPanel() {
                 defaultValue={selectedCandidate.date}
               />
             </label>
-            <label className="space-y-1 text-tds-7 font-medium text-muted sm:col-span-2">
+            <label className="space-y-1 text-tds-7 font-medium text-muted xl:col-span-2">
               거래명
               <input
                 className="h-9 w-full rounded-md border border-border bg-surface px-3 text-tds-6 text-foreground"

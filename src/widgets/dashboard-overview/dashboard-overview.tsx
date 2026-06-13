@@ -60,20 +60,20 @@ export function DashboardOverview() {
 
       <section className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-3">
-            <div>
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <CardTitle>월별 현금 흐름</CardTitle>
               <p className="mt-1 text-tds-6 text-muted">
                 수입과 지출 흐름을 월 단위로 비교합니다.
               </p>
             </div>
-            <Badge variant="info">6개월</Badge>
+            <Badge className="w-fit shrink-0" variant="info">6개월</Badge>
           </CardHeader>
           <CardContent>
-            <div className="flex h-72 items-end gap-3 overflow-hidden rounded-lg border border-border bg-surface-muted p-4">
+            <div className="flex h-72 items-end gap-2 overflow-hidden rounded-lg border border-border bg-surface-muted p-3 sm:gap-3 sm:p-4">
               {cashFlowSeries.map((item) => (
                 <div key={item.month} className="flex h-full flex-1 flex-col justify-end gap-2">
-                  <div className="flex flex-1 items-end justify-center gap-1.5">
+                  <div className="flex min-w-0 flex-1 items-end justify-center gap-1 sm:gap-1.5">
                     <div
                       className="w-full max-w-8 rounded-t bg-toss-green-500"
                       style={{ height: `${(item.income / maxCashFlow) * 100}%` }}
@@ -116,9 +116,9 @@ export function DashboardOverview() {
               const usage = Math.round((budget.used / budget.limit) * 100);
               return (
                 <div key={budget.category} className="space-y-2">
-                  <div className="flex items-center justify-between gap-3 text-tds-6">
+                  <div className="flex flex-col gap-1 text-tds-6 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="font-medium">{budget.category}</span>
-                    <span className="text-muted">
+                    <span className="text-muted sm:text-right">
                       {formatCurrency(budget.used)} / {formatCurrency(budget.limit)}
                     </span>
                   </div>
@@ -141,14 +141,14 @@ export function DashboardOverview() {
 
       <section className="grid gap-5 xl:grid-cols-[1fr_0.95fr]">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-3">
-            <div>
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <CardTitle>최근 거래</CardTitle>
               <p className="mt-1 text-tds-6 text-muted">
                 자동 입력 항목과 검토 상태를 함께 확인합니다.
               </p>
             </div>
-            <Button size="sm" type="button" variant="secondary">
+            <Button className="w-fit shrink-0" size="sm" type="button" variant="secondary">
               전체 보기
             </Button>
           </CardHeader>
@@ -158,14 +158,14 @@ export function DashboardOverview() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-start justify-between gap-3">
-            <div>
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <CardTitle>자동 입력 검수</CardTitle>
               <p className="mt-1 text-tds-6 text-muted">
                 추출된 거래 후보를 수정한 뒤 승인 항목만 저장합니다.
               </p>
             </div>
-            <Badge variant="warning">검수 필요</Badge>
+            <Badge className="w-fit shrink-0" variant="warning">검수 필요</Badge>
           </CardHeader>
           <CardContent>
             <CandidateReviewPanel />
