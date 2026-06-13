@@ -14,6 +14,7 @@ import {
   formatCurrency,
   recentTransactions,
 } from "@/entities/finance/model/dashboard";
+import { AccountSettingsPanel } from "@/features/account/ui/account-settings-panel";
 import { CandidateReviewPanel } from "@/features/auto-input/ui/candidate-review-panel";
 import { RecentTransactionsTable } from "@/features/transactions/ui/recent-transactions-table";
 import { useUiStore, type AppSection } from "@/shared/store/use-ui-store";
@@ -281,26 +282,19 @@ function ReportItem({ label, value }: { label: string; value: string }) {
 
 function SettingsSection() {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div>
-          <CardTitle>설정</CardTitle>
-          <p className="mt-1 text-tds-6 text-muted">
-            프로필, 테마, 통화 단위, 카테고리 관리 설정을 배치합니다.
-          </p>
-        </div>
-        <Settings className="h-5 w-5 text-muted" aria-hidden="true" />
-      </CardHeader>
-      <CardContent className="grid gap-3 md:grid-cols-3">
-        {["라이트/다크 테마", "통화 단위 KRW", "카테고리 규칙"].map((item) => (
-          <div
-            key={item}
-            className="rounded-lg border border-border bg-surface-muted p-4 text-tds-6 font-medium"
-          >
-            {item}
+    <div className="space-y-5">
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between gap-3">
+          <div>
+            <CardTitle>설정</CardTitle>
+            <p className="mt-1 text-tds-6 text-muted">
+              프로필, 로그인 세션, 통화 단위, 월 예산을 관리합니다.
+            </p>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+          <Settings className="h-5 w-5 text-muted" aria-hidden="true" />
+        </CardHeader>
+      </Card>
+      <AccountSettingsPanel />
+    </div>
   );
 }
