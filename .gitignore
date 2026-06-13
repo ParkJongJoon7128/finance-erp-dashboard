@@ -11,6 +11,7 @@ AGENTS.local.md
 *.bank-sample.*
 *.real-statement.*
 private-samples/
+.local-data/
 node_modules
 .next/
 .env

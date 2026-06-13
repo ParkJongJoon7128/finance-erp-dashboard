@@ -86,14 +86,16 @@ function renderSection(section: AppSection) {
 function TransactionsSection() {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <div>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <CardTitle>거래 내역 관리</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
             최근 거래를 기준으로 검색, 필터, 검토 테이블을 확장할 수 있습니다.
           </p>
         </div>
-        <Badge variant="success">{recentTransactions.length}건</Badge>
+        <Badge className="w-fit shrink-0" variant="success">
+          {recentTransactions.length}건
+        </Badge>
       </CardHeader>
       <CardContent>
         <RecentTransactionsTable transactions={recentTransactions} />
@@ -125,23 +127,23 @@ function AnalyticsSection() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <CardTitle>분석 및 차트</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
             월별 수입/지출 추이와 지출 비중을 비교합니다.
           </p>
         </div>
-        <BarChart3 className="h-5 w-5 text-muted" aria-hidden="true" />
+        <BarChart3 className="hidden h-5 w-5 shrink-0 text-muted sm:block" aria-hidden="true" />
       </CardHeader>
       <CardContent>
-        <div className="flex h-80 items-end gap-3 overflow-hidden rounded-lg border border-border bg-surface-muted p-4">
+        <div className="flex h-80 items-end gap-2 overflow-hidden rounded-lg border border-border bg-surface-muted p-3 sm:gap-3 sm:p-4">
           {cashFlowSeries.map((item) => (
             <div
               key={item.month}
               className="flex h-full flex-1 flex-col justify-end gap-2"
             >
-              <div className="flex flex-1 items-end justify-center gap-1.5">
+              <div className="flex min-w-0 flex-1 items-end justify-center gap-1 sm:gap-1.5">
                 <div
                   className="w-full max-w-10 rounded-t bg-toss-green-500"
                   style={{ height: `${(item.income / maxCashFlow) * 100}%` }}
@@ -167,23 +169,23 @@ function AnalyticsSection() {
 function BudgetSection() {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <CardTitle>예산 관리</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
             카테고리 예산 대비 사용 금액과 초과 상태를 확인합니다.
           </p>
         </div>
-        <WalletCards className="h-5 w-5 text-muted" aria-hidden="true" />
+        <WalletCards className="hidden h-5 w-5 shrink-0 text-muted sm:block" aria-hidden="true" />
       </CardHeader>
       <CardContent className="space-y-4">
         {categoryBudgets.map((budget) => {
           const usage = Math.round((budget.used / budget.limit) * 100);
           return (
             <div key={budget.category} className="space-y-2">
-              <div className="flex items-center justify-between gap-3 text-tds-6">
+              <div className="flex flex-col gap-1 text-tds-6 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                 <span className="font-medium">{budget.category}</span>
-                <span className="text-muted">
+                <span className="text-muted sm:text-right">
                   {formatCurrency(budget.used)} / {formatCurrency(budget.limit)}
                 </span>
               </div>
@@ -214,14 +216,14 @@ function SubscriptionsSection() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <CardTitle>구독 관리</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
             활성 구독의 월 환산 비용과 다음 결제일을 확인합니다.
           </p>
         </div>
-        <CreditCard className="h-5 w-5 text-muted" aria-hidden="true" />
+        <CreditCard className="hidden h-5 w-5 shrink-0 text-muted sm:block" aria-hidden="true" />
       </CardHeader>
       <CardContent className="grid gap-3 md:grid-cols-3">
         {subscriptions.map((subscription) => (
@@ -246,14 +248,14 @@ function SubscriptionsSection() {
 function ReportsSection() {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <CardTitle>월간 보고서</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
             이번 달 수입, 지출, 순저축과 관리 포인트를 요약합니다.
           </p>
         </div>
-        <FileSearch className="h-5 w-5 text-muted" aria-hidden="true" />
+        <FileSearch className="hidden h-5 w-5 shrink-0 text-muted sm:block" aria-hidden="true" />
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-3">
         <ReportItem
@@ -282,14 +284,14 @@ function ReportItem({ label, value }: { label: string; value: string }) {
 function SettingsSection() {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <CardTitle>설정</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
             프로필, 테마, 통화 단위, 카테고리 관리 설정을 배치합니다.
           </p>
         </div>
-        <Settings className="h-5 w-5 text-muted" aria-hidden="true" />
+        <Settings className="hidden h-5 w-5 shrink-0 text-muted sm:block" aria-hidden="true" />
       </CardHeader>
       <CardContent className="grid gap-3 md:grid-cols-3">
         {["라이트/다크 테마", "통화 단위 KRW", "카테고리 규칙"].map((item) => (
