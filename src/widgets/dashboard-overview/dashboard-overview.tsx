@@ -1,4 +1,7 @@
+"use client";
+
 import {
+  AlertCircle,
   ArrowDownLeft,
   ArrowUpRight,
   Landmark,
@@ -7,13 +10,10 @@ import {
   Wallet,
 } from "lucide-react";
 import {
-  cashFlowSeries,
-  categoryBudgets,
-  dashboardMetrics,
   formatCurrency,
-  recentTransactions,
 } from "@/entities/finance/model/dashboard";
 import { CandidateReviewPanel } from "@/features/auto-input/ui/candidate-review-panel";
+import { useDashboardSummaryQuery } from "@/features/dashboard/model/dashboard-queries";
 import { RecentTransactionsTable } from "@/features/transactions/ui/recent-transactions-table";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -22,39 +22,68 @@ import { Progress } from "@/shared/ui/progress";
 import { MetricCard } from "./metric-card";
 
 export function DashboardOverview() {
-  const maxCashFlow = Math.max(
-    ...cashFlowSeries.flatMap((item) => [item.income, item.expense]),
+  const dashboardQuery = useDashboardSummaryQuery();
+
+  if (dashboardQuery.isLoading) {
+    return <DashboardLoadingState />;
+  }
+
+  if (dashboardQuery.isError || !dashboardQuery.data) {
+    return (
+      <DashboardErrorState
+        onRetry={() => void dashboardQuery.refetch()}
+      />
+    );
+  }
+
+  const summary = dashboardQuery.data;
+  const metrics = summary.metrics;
+  const categoryExpenseItems = Object.entries(summary.categoryExpense)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+  const maxCashFlow = Math.max(metrics.income, metrics.expense, 1);
+  const monthLabel = summary.month.replace("-", "년 ") + "월";
+  const hasCategoryExpense = categoryExpenseItems.length > 0;
+
+  const flowItems = [
+    { label: "수입", amount: metrics.income, className: "bg-toss-green-500" },
+    { label: "지출", amount: metrics.expense, className: "bg-toss-red-500" },
+  ];
+
+  const reviewCount = summary.recentTransactions.filter(
+    (transaction) => transaction.status === "review",
   );
 
   return (
     <div className="space-y-5">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          change="전월 대비 +3.1%"
+          change={`${monthLabel} 기준`}
           icon={ArrowDownLeft}
           title="이번 달 수입"
           tone="success"
-          value={formatCurrency(dashboardMetrics.income)}
+          value={formatCurrency(metrics.income)}
         />
         <MetricCard
-          change="예산 대비 72% 사용"
+          change={`거래 ${metrics.transactionCount ?? 0}건 집계`}
           icon={ArrowUpRight}
           title="이번 달 지출"
           tone="warning"
-          value={formatCurrency(dashboardMetrics.expense)}
+          value={formatCurrency(metrics.expense)}
         />
         <MetricCard
-          change={`지출 비율 ${dashboardMetrics.expenseRatio}%`}
+          change={`지출 비율 ${metrics.expenseRatio}%`}
           icon={PiggyBank}
           title="월간 순저축"
-          tone="success"
-          value={formatCurrency(dashboardMetrics.netSavings)}
+          tone={metrics.netSavings >= 0 ? "success" : "warning"}
+          value={formatCurrency(metrics.netSavings)}
         />
         <MetricCard
-          change={`월 구독 ${formatCurrency(dashboardMetrics.subscriptionTotal)}`}
+          change={`월 예산 대비 ${metrics.budgetUsage}%`}
           icon={Percent}
           title="예산 사용률"
-          value={`${dashboardMetrics.budgetUsage}%`}
+          tone={metrics.budgetUsage >= 100 ? "warning" : "default"}
+          value={`${metrics.budgetUsage}%`}
         />
       </section>
 
@@ -62,32 +91,30 @@ export function DashboardOverview() {
         <Card>
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <CardTitle>월별 현금 흐름</CardTitle>
+              <CardTitle>이번 달 현금 흐름</CardTitle>
               <p className="mt-1 text-tds-6 text-muted">
-                수입과 지출 흐름을 월 단위로 비교합니다.
+                실제 거래 데이터를 기준으로 수입과 지출을 비교합니다.
               </p>
             </div>
-            <Badge className="w-fit shrink-0" variant="info">6개월</Badge>
+            <Badge className="w-fit shrink-0" variant="info">{summary.month}</Badge>
           </CardHeader>
           <CardContent>
-            <div className="flex h-72 items-end gap-2 overflow-hidden rounded-lg border border-border bg-surface-muted p-3 sm:gap-3 sm:p-4">
-              {cashFlowSeries.map((item) => (
-                <div key={item.month} className="flex h-full flex-1 flex-col justify-end gap-2">
-                  <div className="flex min-w-0 flex-1 items-end justify-center gap-1 sm:gap-1.5">
+            <div className="grid h-72 gap-4 rounded-lg border border-border bg-surface-muted p-4 sm:grid-cols-2">
+              {flowItems.map((item) => (
+                <div key={item.label} className="flex min-w-0 flex-col justify-end gap-3">
+                  <div className="flex flex-1 items-end justify-center">
                     <div
-                      className="w-full max-w-8 rounded-t bg-toss-green-500"
-                      style={{ height: `${(item.income / maxCashFlow) * 100}%` }}
-                      title={`${item.month} 수입 ${item.income}만원`}
-                    />
-                    <div
-                      className="w-full max-w-8 rounded-t bg-toss-red-500"
-                      style={{ height: `${(item.expense / maxCashFlow) * 100}%` }}
-                      title={`${item.month} 지출 ${item.expense}만원`}
+                      className={`w-full max-w-24 rounded-t ${item.className}`}
+                      style={{ height: `${(item.amount / maxCashFlow) * 100}%` }}
+                      title={`${item.label} ${formatCurrency(item.amount)}`}
                     />
                   </div>
-                  <span className="text-center text-tds-7 text-muted">
-                    {item.month}
-                  </span>
+                  <div className="text-center">
+                    <p className="text-tds-7 text-muted">{item.label}</p>
+                    <p className="mt-1 text-tds-6 font-semibold">
+                      {formatCurrency(item.amount)}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -106,35 +133,42 @@ export function DashboardOverview() {
 
         <Card>
           <CardHeader>
-            <CardTitle>카테고리별 예산</CardTitle>
+            <CardTitle>카테고리별 지출</CardTitle>
             <p className="mt-1 text-tds-6 text-muted">
-              초과 가능성이 높은 항목을 먼저 확인합니다.
+              실제 거래에서 집계한 지출 비중을 확인합니다.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            {categoryBudgets.map((budget) => {
-              const usage = Math.round((budget.used / budget.limit) * 100);
-              return (
-                <div key={budget.category} className="space-y-2">
-                  <div className="flex flex-col gap-1 text-tds-6 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                    <span className="font-medium">{budget.category}</span>
-                    <span className="text-muted sm:text-right">
-                      {formatCurrency(budget.used)} / {formatCurrency(budget.limit)}
-                    </span>
+            {hasCategoryExpense ? (
+              categoryExpenseItems.map(([category, amount]) => {
+                const usage =
+                  metrics.expense > 0 ? Math.round((amount / metrics.expense) * 100) : 0;
+                return (
+                  <div key={category} className="space-y-2">
+                    <div className="flex flex-col gap-1 text-tds-6 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                      <span className="font-medium">{category}</span>
+                      <span className="text-muted sm:text-right">
+                        {formatCurrency(amount)} · {usage}%
+                      </span>
+                    </div>
+                    <Progress
+                      indicatorClassName={
+                        usage >= 40
+                          ? "bg-toss-red-500"
+                          : usage >= 20
+                            ? "bg-toss-orange-500"
+                            : "bg-toss-green-500"
+                      }
+                      value={usage}
+                    />
                   </div>
-                  <Progress
-                    indicatorClassName={
-                      usage >= 100
-                        ? "bg-toss-red-500"
-                        : usage >= 70
-                          ? "bg-toss-orange-500"
-                          : "bg-toss-green-500"
-                    }
-                    value={usage}
-                  />
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p className="rounded-lg border border-border bg-surface-muted p-4 text-tds-6 text-muted">
+                이번 달 지출 거래가 아직 없습니다.
+              </p>
+            )}
           </CardContent>
         </Card>
       </section>
@@ -153,7 +187,7 @@ export function DashboardOverview() {
             </Button>
           </CardHeader>
           <CardContent>
-            <RecentTransactionsTable transactions={recentTransactions} />
+            <RecentTransactionsTable transactions={summary.recentTransactions} />
           </CardContent>
         </Card>
 
@@ -166,6 +200,11 @@ export function DashboardOverview() {
               </p>
             </div>
             <Badge className="w-fit shrink-0" variant="warning">검수 필요</Badge>
+            {reviewCount.length > 0 && (
+              <Badge className="w-fit shrink-0" variant="danger">
+                실제 거래 {reviewCount.length}건
+              </Badge>
+            )}
           </CardHeader>
           <CardContent>
             <CandidateReviewPanel />
@@ -180,7 +219,7 @@ export function DashboardOverview() {
             <div>
               <p className="text-tds-6 font-semibold">주거래 계좌</p>
               <p className="mt-1 text-tds-6 text-muted">
-                입출금 변동은 대시보드 지표에 즉시 반영되는 구조로 확장됩니다.
+                입출금 변동은 API를 통해 대시보드 지표에 반영됩니다.
               </p>
             </div>
           </CardContent>
@@ -191,7 +230,7 @@ export function DashboardOverview() {
             <div>
               <p className="text-tds-6 font-semibold">예산 경보</p>
               <p className="mt-1 text-tds-6 text-muted">
-                쇼핑 예산은 이미 100%를 넘어 다음 지출 전 조정이 필요합니다.
+                현재 월 예산 사용률은 {metrics.budgetUsage}%입니다.
               </p>
             </div>
           </CardContent>
@@ -202,12 +241,58 @@ export function DashboardOverview() {
             <div>
               <p className="text-tds-6 font-semibold">보고서 포인트</p>
               <p className="mt-1 text-tds-6 text-muted">
-                고정비 비중과 카테고리별 증가율을 월간 보고서에 연결합니다.
+                최근 거래 {summary.recentTransactions.length}건을 월간 보고서에 연결합니다.
               </p>
             </div>
           </CardContent>
         </Card>
       </section>
     </div>
+  );
+}
+
+function DashboardLoadingState() {
+  return (
+    <div className="space-y-5">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {["수입", "지출", "순저축", "예산"].map((label) => (
+          <Card key={label}>
+            <CardContent className="p-4">
+              <div className="h-4 w-20 rounded bg-surface-muted" />
+              <div className="mt-4 h-8 w-32 rounded bg-surface-muted" />
+              <div className="mt-4 h-3 w-24 rounded bg-surface-muted" />
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+      <Card>
+        <CardContent className="p-5 text-tds-6 text-muted">
+          대시보드 데이터를 불러오는 중입니다.
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function DashboardErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-toss-red-500" aria-hidden="true" />
+          <div>
+            <p className="text-tds-6 font-semibold">
+              대시보드 데이터를 불러오지 못했습니다.
+            </p>
+            <p className="mt-1 text-tds-6 text-muted">
+              계정 설정 또는 로컬 데이터 파일 상태를 확인한 뒤 다시 시도하세요.
+            </p>
+          </div>
+        </div>
+        <Button className="w-fit shrink-0" onClick={onRetry} type="button" variant="secondary">
+          다시 시도
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
