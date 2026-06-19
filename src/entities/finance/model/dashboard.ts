@@ -48,6 +48,19 @@ export type TransactionListResponse = {
   transactions: Transaction[];
 };
 
+export type CreateTransactionPayload = {
+  date: string;
+  merchant: string;
+  category: string;
+  account: string;
+  type: TransactionType;
+  amount: number;
+  status?: TransactionStatus;
+  memo?: string;
+};
+
+export type UpdateTransactionPayload = Partial<CreateTransactionPayload>;
+
 export type ReviewCandidate = {
   id: string;
   date: string;

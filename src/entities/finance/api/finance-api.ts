@@ -1,8 +1,11 @@
 import { apiClient } from "@/shared/api/client";
 import type {
+  CreateTransactionPayload,
   DashboardSummary,
+  Transaction,
   TransactionListParams,
   TransactionListResponse,
+  UpdateTransactionPayload,
 } from "../model/dashboard";
 
 export type ApiData<T> = {
@@ -24,4 +27,32 @@ export async function getTransactions(params: TransactionListParams = {}) {
   );
 
   return response.data.data.transactions;
+}
+
+export async function createTransaction(payload: CreateTransactionPayload) {
+  const response = await apiClient.post<
+    ApiData<{ transaction: Transaction; duplicateOf: string | null }>
+  >("/transactions", payload);
+
+  return response.data.data;
+}
+
+export async function updateTransaction({
+  id,
+  payload,
+}: {
+  id: string;
+  payload: UpdateTransactionPayload;
+}) {
+  const response = await apiClient.patch<ApiData<Transaction>>(
+    `/transactions/${id}`,
+    payload,
+  );
+
+  return response.data.data;
+}
+
+export async function deleteTransaction(id: string) {
+  await apiClient.delete(`/transactions/${id}`);
+  return id;
 }
