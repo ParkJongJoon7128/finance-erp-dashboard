@@ -1,4 +1,5 @@
 import type { CreateTransactionInput } from "@/shared/server/domain";
+import { withApiLogging } from "@/shared/server/api-logger";
 import { created, fail, readJsonBody } from "@/shared/server/api-response";
 import {
   isPossibleDuplicate,
@@ -15,7 +16,7 @@ type BulkBody = {
   transactions: CreateTransactionInput[];
 };
 
-export async function POST(request: Request) {
+async function createTransactionsBulk(request: Request) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -73,3 +74,5 @@ export async function POST(request: Request) {
 
   return created({ saved });
 }
+
+export const POST = withApiLogging(createTransactionsBulk);

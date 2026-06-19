@@ -2,6 +2,7 @@ import type {
   CreateAccountPayload,
   UpdateAccountPayload,
 } from "@/entities/account/model/account";
+import { withApiLogging } from "@/shared/server/api-logger";
 import { created, fail, noContent, ok, readJsonBody } from "@/shared/server/api-response";
 import {
   getDefaultAccount,
@@ -19,7 +20,7 @@ import {
 
 export const runtime = "nodejs";
 
-export async function GET() {
+async function getAccount() {
   const store = await readStore();
   const account = getDefaultAccount(store);
 
@@ -30,7 +31,7 @@ export async function GET() {
   return ok(toPublicAccount(account));
 }
 
-export async function POST(request: Request) {
+async function createAccount(request: Request) {
   const body = await readJsonBody<CreateAccountPayload>(request);
   const validation = validateCreateAccount(body);
 
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
   return created(result);
 }
 
-export async function PATCH(request: Request) {
+async function updateAccount(request: Request) {
   const body = await readJsonBody<UpdateAccountPayload>(request);
   const validation = validateUpdateAccount(body);
 
@@ -113,7 +114,7 @@ export async function PATCH(request: Request) {
   return ok(result);
 }
 
-export async function DELETE() {
+async function deleteAccount() {
   const deleted = await updateStore((store) => {
     const account = getDefaultAccount(store);
     if (!account) return false;
@@ -132,3 +133,7 @@ export async function DELETE() {
   return noContent();
 }
 
+export const GET = withApiLogging(getAccount);
+export const POST = withApiLogging(createAccount);
+export const PATCH = withApiLogging(updateAccount);
+export const DELETE = withApiLogging(deleteAccount);

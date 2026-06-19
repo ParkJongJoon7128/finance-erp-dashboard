@@ -1,4 +1,5 @@
 import type { CreateTransactionInput } from "@/shared/server/domain";
+import { withApiLogging } from "@/shared/server/api-logger";
 import { created, fail, ok, readJsonBody } from "@/shared/server/api-response";
 import {
   isPossibleDuplicate,
@@ -11,7 +12,7 @@ import { validateCreateTransaction } from "@/shared/server/validation";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+async function getTransactions(request: Request) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -39,7 +40,7 @@ export async function GET(request: Request) {
   return ok({ transactions });
 }
 
-export async function POST(request: Request) {
+async function createTransaction(request: Request) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -75,3 +76,6 @@ export async function POST(request: Request) {
 
   return created(transaction);
 }
+
+export const GET = withApiLogging(getTransactions);
+export const POST = withApiLogging(createTransaction);

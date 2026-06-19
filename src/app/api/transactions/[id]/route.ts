@@ -1,4 +1,5 @@
 import type { UpdateTransactionInput } from "@/shared/server/domain";
+import { withApiLogging } from "@/shared/server/api-logger";
 import { fail, noContent, ok, readJsonBody } from "@/shared/server/api-response";
 import { now, updateStore } from "@/shared/server/data-store";
 import { requireCurrentAccount } from "@/shared/server/current-account";
@@ -10,7 +11,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: Request, context: RouteContext) {
+async function getTransaction(_request: Request, context: RouteContext) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -26,7 +27,7 @@ export async function GET(_request: Request, context: RouteContext) {
   return ok(transaction);
 }
 
-export async function PATCH(request: Request, context: RouteContext) {
+async function updateTransaction(request: Request, context: RouteContext) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -57,7 +58,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   return ok(transaction);
 }
 
-export async function DELETE(_request: Request, context: RouteContext) {
+async function deleteTransaction(_request: Request, context: RouteContext) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -77,3 +78,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
   return noContent();
 }
 
+export const GET = withApiLogging(getTransaction);
+export const PATCH = withApiLogging(updateTransaction);
+export const DELETE = withApiLogging(deleteTransaction);

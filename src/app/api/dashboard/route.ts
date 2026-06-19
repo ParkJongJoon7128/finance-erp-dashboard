@@ -1,10 +1,11 @@
+import { withApiLogging } from "@/shared/server/api-logger";
 import { ok } from "@/shared/server/api-response";
 import { buildDashboardSummary } from "@/shared/server/dashboard";
 import { requireCurrentAccount } from "@/shared/server/current-account";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+async function getDashboard(request: Request) {
   const current = await requireCurrentAccount();
   if (!current.ok) return current.response;
 
@@ -24,3 +25,4 @@ export async function GET(request: Request) {
   );
 }
 
+export const GET = withApiLogging(getDashboard);

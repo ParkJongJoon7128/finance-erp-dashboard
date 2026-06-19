@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import type { LoginPayload } from "@/entities/account/model/account";
+import { withApiLogging } from "@/shared/server/api-logger";
 import { fail, ok, readJsonBody } from "@/shared/server/api-response";
 import { readStore, toPublicAccount, verifyPassword } from "@/shared/server/data-store";
 import { sessionCookieName } from "@/shared/server/current-account";
@@ -7,7 +8,7 @@ import { validateLogin } from "@/shared/server/validation";
 
 export const runtime = "nodejs";
 
-export async function GET() {
+async function getSession() {
   const store = await readStore();
   const userId = (await cookies()).get(sessionCookieName)?.value;
   const account = store.accounts.find((item) => item.id === userId);
@@ -18,7 +19,7 @@ export async function GET() {
   });
 }
 
-export async function POST(request: Request) {
+async function loginSession(request: Request) {
   const body = await readJsonBody<LoginPayload>(request);
   const validation = validateLogin(body);
 
@@ -47,7 +48,11 @@ export async function POST(request: Request) {
   return ok({ authenticated: true, account: toPublicAccount(account) });
 }
 
-export async function DELETE() {
+async function deleteSession() {
   (await cookies()).delete(sessionCookieName);
   return ok({ authenticated: false, account: null });
 }
+
+export const GET = withApiLogging(getSession);
+export const POST = withApiLogging(loginSession);
+export const DELETE = withApiLogging(deleteSession);
