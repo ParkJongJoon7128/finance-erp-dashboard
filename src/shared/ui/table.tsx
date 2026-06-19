@@ -1,4 +1,8 @@
-import type { HTMLAttributes, TableHTMLAttributes } from "react";
+import type {
+  HTMLAttributes,
+  TableHTMLAttributes,
+  TdHTMLAttributes,
+} from "react";
 import { cn } from "@/shared/lib/cn";
 
 export function Table({
@@ -51,6 +55,6 @@ export function TableHead({
 export function TableCell({
   className,
   ...props
-}: HTMLAttributes<HTMLTableCellElement>) {
+}: TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn("whitespace-nowrap px-3 py-3", className)} {...props} />;
 }

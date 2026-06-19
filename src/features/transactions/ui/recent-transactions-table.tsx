@@ -37,56 +37,64 @@ export function RecentTransactionsTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transactions.map((transaction) => (
-          <TableRow key={transaction.id}>
-            <TableCell className="text-muted">
-              {transaction.date}
-            </TableCell>
-            <TableCell>
-              <div className="flex min-w-44 items-center gap-2 font-medium">
-                {transaction.type === "income" ? (
-                  <ArrowDownLeft
-                    className="h-4 w-4 text-toss-green-600 dark:text-toss-green-300"
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <ArrowUpRight
-                    className="h-4 w-4 text-toss-red-600 dark:text-toss-red-300"
-                    aria-hidden="true"
-                  />
-                )}
-                <span className="truncate">{transaction.merchant}</span>
-              </div>
-            </TableCell>
-            <TableCell>{transaction.category}</TableCell>
-            <TableCell className="text-muted">
-              {transaction.account}
-            </TableCell>
-            <TableCell
-              className={
-                transaction.type === "income"
-                  ? "text-right font-semibold text-toss-green-600 dark:text-toss-green-300"
-                  : "text-right font-semibold text-foreground"
-              }
-            >
-              {transaction.type === "income" ? "+" : "-"}
-              {formatCurrency(transaction.amount)}
-            </TableCell>
-            <TableCell>
-              <Badge
-                variant={
-                  transaction.status === "review"
-                    ? "warning"
-                    : transaction.status === "auto-input"
-                      ? "info"
-                      : "success"
+        {transactions.length > 0 ? (
+          transactions.map((transaction) => (
+            <TableRow key={transaction.id}>
+              <TableCell className="text-muted">
+                {transaction.date}
+              </TableCell>
+              <TableCell>
+                <div className="flex min-w-44 items-center gap-2 font-medium">
+                  {transaction.type === "income" ? (
+                    <ArrowDownLeft
+                      className="h-4 w-4 text-toss-green-600 dark:text-toss-green-300"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <ArrowUpRight
+                      className="h-4 w-4 text-toss-red-600 dark:text-toss-red-300"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className="truncate">{transaction.merchant}</span>
+                </div>
+              </TableCell>
+              <TableCell>{transaction.category}</TableCell>
+              <TableCell className="text-muted">
+                {transaction.account}
+              </TableCell>
+              <TableCell
+                className={
+                  transaction.type === "income"
+                    ? "text-right font-semibold text-toss-green-600 dark:text-toss-green-300"
+                    : "text-right font-semibold text-foreground"
                 }
               >
-                {statusLabels[transaction.status]}
-              </Badge>
+                {transaction.type === "income" ? "+" : "-"}
+                {formatCurrency(transaction.amount)}
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant={
+                    transaction.status === "review"
+                      ? "warning"
+                      : transaction.status === "auto-input"
+                        ? "info"
+                        : "success"
+                  }
+                >
+                  {statusLabels[transaction.status]}
+                </Badge>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell className="py-6 text-center text-muted" colSpan={6}>
+              표시할 거래 내역이 없습니다.
             </TableCell>
           </TableRow>
-        ))}
+        )}
       </TableBody>
     </Table>
   );

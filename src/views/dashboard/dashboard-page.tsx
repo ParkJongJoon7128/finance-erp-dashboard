@@ -12,10 +12,10 @@ import {
   cashFlowSeries,
   dashboardMetrics,
   formatCurrency,
-  recentTransactions,
 } from "@/entities/finance/model/dashboard";
 import { AccountSettingsPanel } from "@/features/account/ui/account-settings-panel";
 import { CandidateReviewPanel } from "@/features/auto-input/ui/candidate-review-panel";
+import { useTransactionsQuery } from "@/features/transactions/model/transaction-queries";
 import { RecentTransactionsTable } from "@/features/transactions/ui/recent-transactions-table";
 import { useUiStore, type AppSection } from "@/shared/store/use-ui-store";
 import { Badge } from "@/shared/ui/badge";
@@ -85,21 +85,42 @@ function renderSection(section: AppSection) {
 }
 
 function TransactionsSection() {
+  const transactionsQuery = useTransactionsQuery();
+  const transactions = transactionsQuery.data ?? [];
+
   return (
     <Card>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <CardTitle>거래 내역 관리</CardTitle>
           <p className="mt-1 text-tds-6 text-muted">
-            최근 거래를 기준으로 검색, 필터, 검토 테이블을 확장할 수 있습니다.
+            로컬 거래 API의 확정 거래와 자동 입력 거래를 확인합니다.
           </p>
         </div>
-        <Badge className="w-fit shrink-0" variant="success">
-          {recentTransactions.length}건
+        <Badge
+          className="w-fit shrink-0"
+          variant={transactionsQuery.isError ? "danger" : "success"}
+        >
+          {transactionsQuery.isLoading
+            ? "불러오는 중"
+            : transactionsQuery.isError
+              ? "조회 실패"
+              : `${transactions.length}건`}
         </Badge>
       </CardHeader>
       <CardContent>
-        <RecentTransactionsTable transactions={recentTransactions} />
+        {transactionsQuery.isError ? (
+          <p className="rounded-lg border border-border bg-surface-muted p-4 text-tds-6 text-muted">
+            거래 내역을 불러오지 못했습니다. 계정 설정 또는 로컬 데이터 상태를
+            확인하세요.
+          </p>
+        ) : transactionsQuery.isLoading ? (
+          <p className="rounded-lg border border-border bg-surface-muted p-4 text-tds-6 text-muted">
+            거래 내역을 불러오는 중입니다.
+          </p>
+        ) : (
+          <RecentTransactionsTable transactions={transactions} />
+        )}
       </CardContent>
     </Card>
   );
