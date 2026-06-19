@@ -19,6 +19,35 @@ export type BudgetUsage = {
   limit: number;
 };
 
+export type DashboardMetrics = {
+  income: number;
+  expense: number;
+  netSavings: number;
+  expenseRatio: number;
+  budgetUsage: number;
+  transactionCount?: number;
+  subscriptionTotal?: number;
+};
+
+export type DashboardSummary = {
+  month: string;
+  metrics: DashboardMetrics;
+  categoryExpense: Record<string, number>;
+  recentTransactions: Transaction[];
+};
+
+export type TransactionListParams = {
+  type?: TransactionType;
+  category?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export type TransactionListResponse = {
+  transactions: Transaction[];
+};
+
 export type ReviewCandidate = {
   id: string;
   date: string;
