@@ -2,7 +2,7 @@
 
 import { PanelLeft } from "lucide-react";
 import { useSidebarStore } from "@/widgets/app-shell/model/sidebarStore";
-import { ThemeToggle } from "@/shared/ui";
+import { AuthActions } from "@/widgets/app-shell/ui/AuthActions";
 
 export function Header() {
   const toggle = useSidebarStore((state) => state.toggle);
@@ -28,7 +28,7 @@ export function Header() {
       </button>
 
       <div className="ml-auto">
-        <ThemeToggle />
+        <AuthActions />
       </div>
     </header>
   );
