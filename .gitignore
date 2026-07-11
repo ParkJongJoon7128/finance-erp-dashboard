@@ -1,11 +1,9 @@
 # Local OS files
 .DS_Store
 
-# Local Codex harness overrides
-.codex/
-AGENTS.local.md
-.codex/AGENTS.local.md
-.codex/settings.local.json
+# Claude Code
+.claude/
+.omc/
 
 # Sensitive finance samples
 *.bank-sample.*
